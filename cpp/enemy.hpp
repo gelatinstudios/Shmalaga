@@ -1,12 +1,14 @@
+#ifndef ENEMY_H
+#define ENEMY_H
+
 class GameData;
 
-typedef struct {
+struct Sparkle {
         SDL_Rect rect;
         Uint8 timeout;
-} Sparkle;
+};
 
-class Enemy {
-public:
+struct Enemy {
         SDL_Rect rect;
         Uint8 status;
         Uint8 explosion_timeout;
@@ -28,3 +30,5 @@ public:
         void lvl6(const SDL_Rect, int);
         void lvl6_enemy_move(const SDL_Rect, int);
 };
+
+#endif

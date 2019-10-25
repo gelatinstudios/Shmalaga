@@ -1,15 +1,16 @@
+#ifndef BOSS_H
+#define BOSS_H
 
 #define NUM_EXP 20
 
-typedef struct {
+struct Explosion {
         SDL_Rect rect;
         Uint8 timeout;
-} Explosion;
+};
 
 class GameData;
 
-class Boss {
-public:
+struct Boss {
         SDL_Rect rect;
         Uint8 status;
         unsigned new_exp_timeout;
@@ -30,3 +31,5 @@ public:
         void render(std::shared_ptr<SDL_Renderer>, std::shared_ptr<SDL_Texture>[]);
         void boss_battle(GameData &, std::shared_ptr<Mix_Chunk>);
 };
+
+#endif

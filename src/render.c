@@ -9,10 +9,12 @@ const SDL_Rect muted_rect = {10, 720-30-10, 250, 30};
 const SDL_Rect lives_rect = {1280-100-10, 720-20-50, 100, 20};
 const SDL_Rect dead_rect = {(1280 - 600) / 2, 390-100+10, 600, 100};
 const SDL_Rect pressr_rect = {(1280 - 310) / 2, 400, 310, 50};
-const SDL_Rect pause_rect = {640-250+10, 390-(390/2)-100, 500, 100};
+//const SDL_Rect pause_rect = {640-250+10, 390-(390/2)-100, 500, 100};
 const SDL_Rect press_enter_rect = {(1280 - 900) / 2, (720 - 100) / 2, 900, 100};
 const SDL_Rect one_up_rect = {10, 10+25+10, 50, 20};
 const SDL_Rect stage_rect = {(1280 - 400) / 2, (720 - 55) / 2, 400, 55};
+const SDL_Rect boss_battle_rect = {640-250+10, 390-(390/2)-100, 500, 100};
+const SDL_Rect win_rect = {(1280 - 700) / 2, (720 - 100) / 2, 700, 100};
 
 void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
         //music                               VVVthis is for the menuVVV
@@ -40,7 +42,7 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
                 render_name(data, rend, assets->textures.texts, assets->font);
                 return;
         } else if(data->gamestate == LEADERBOARD) {
-                render_leaderboard(data->leaderboard, rend, assets->textures.texts, assets->font);
+                render_leaderboard(data->leaderboard, rend, assets->textures.texts, assets->font, data->player_score_index);
                 return;
         }
 
@@ -69,6 +71,10 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
                 SDL_Surface *surf = TTF_RenderText_Blended(assets->font, stage, white);
                 render_surf(rend, surf, &stage_rect);
                 --data->level_timeout;
+
+                if(data->level == 7 && data->level_timeout % 10 - 3 > 0) {
+                        SDL_RenderCopy(rend, assets->textures.texts[TXT_BOSS], NULL, &boss_battle_rect);
+                }
         }
 
         //"sound muted"
@@ -87,15 +93,21 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
                 SDL_RenderCopy(rend, assets->textures.texts[TXT_PRESSR], NULL, &pressr_rect);
         }
 
+        //"YOU WIN"
+        if(data->level == 7 && data->boss.status == DEAD) {
+                SDL_RenderCopy(rend, assets->textures.texts[TXT_YOU_WIN], NULL, &win_rect);
+                SDL_RenderCopy(rend, assets->textures.texts[TXT_PRESSR], NULL, &pressr_rect);
+        }
+
         switch(data->gamestate) {
                 case IN_GAME:
                                 SDL_RenderPresent(rend);
                                 break;
-                case PAUSED:
-                                if(!Mix_PausedMusic()) Mix_PauseMusic();
-                                SDL_RenderCopy(rend, assets->textures.texts[TXT_PAUSED], NULL, &pause_rect);
-                                SDL_RenderPresent(rend);
-                                break;
+                // case PAUSED:
+                //                 //if(!Mix_PausedMusic()) Mix_PauseMusic();
+                //                 SDL_RenderCopy(rend, assets->textures.texts[TXT_PAUSED], NULL, &pause_rect);
+                //                 SDL_RenderPresent(rend);
+                //                 break;
                 case MENU:
                 case CONTROLS:
                 case KEYSET_MODE:

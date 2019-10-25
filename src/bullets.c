@@ -1,10 +1,9 @@
 #include "essentials.h"
 
-void create_gb(GameData *data, Mix_Chunk *laser) {
+void create_gb(GameData *data) {
         data->gb[data->gb_count].x = data->ship.x + data->ship.w - 11;
         data->gb[data->gb_count].y = data->ship.y + data->ship.h/2 - 10/2;
         ++data->gb_count;
-        if(!data->muted) Mix_PlayChannel(-1, laser, 0);
         data->bullet_timeout = BULLET_TIMEOUT;
 }
 
@@ -14,7 +13,7 @@ void destroy_gb(GameData *data, size_t n) {
         --data->gb_count;
 }
 
-void create_bb(GameData *data, const SDL_Rect *rect, double angle, Mix_Chunk *laser) {
+void create_bb(GameData *data, const SDL_Rect *rect, double angle) {
         data->bb[data->bb_count].point.x = rint(rect->x + rect->w/2.0 * (1.0 - cos(DEGRAD(angle))) - 12.0/2.0);
         data->bb[data->bb_count].point.y = rint(rect->y + rect->h/2.0 * (1.0 - sin(DEGRAD(angle))) - 8.0/2.0);
 
@@ -23,7 +22,6 @@ void create_bb(GameData *data, const SDL_Rect *rect, double angle, Mix_Chunk *la
         data->bb[data->bb_count].angle = angle;
 
         ++data->bb_count;
-        if(!data->muted) Mix_PlayChannel(-1, laser, 0);
 }
 
 void destroy_bb(GameData *data, size_t n) {

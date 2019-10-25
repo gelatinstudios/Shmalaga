@@ -1,9 +1,12 @@
+#ifndef ESSENTIALS_H
+#define ESSENTIALS_H
 
 #include <iostream>
 #include <memory>
 #include <vector>
 #include <fstream>
 
+#include <cstdlib>
 #include <cmath>
 #include <cstring>
 #include <ctype.h>
@@ -30,3 +33,5 @@ void render(GameData &, std::shared_ptr<SDL_Renderer>, Assets &);
 
 bool menu_handler(GameData &data, SDL_Event *event);
 void render_menu(GameData &data, std::shared_ptr<SDL_Renderer> rend, std::shared_ptr<TTF_Font> font, std::shared_ptr<SDL_Texture> menu[]);
+
+#endif

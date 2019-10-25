@@ -65,7 +65,8 @@ static inline void move_enemies(GameData *data, Sounds *sounds) {
                         case 6:         lvl6(&data->enemies[i], &data->ship, data->player_status == ALIVE, i); break;
                 }
                 if(is_on_screen(data->enemies[i].rect) && !rng(800)) {
-                        create_bb(data, &data->enemies[i].rect, data->enemies[i].angle, sounds->sfx[SND_BADLASER]);
+                        create_bb(data, &data->enemies[i].rect, data->enemies[i].angle);
+                        if (!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_BADLASER], 0);
                 }
         }
 
@@ -157,7 +158,7 @@ static inline void lvl5(Enemy *enemy, const SDL_Rect *ship) {
 static inline void lvl6(Enemy *enemy, const SDL_Rect *ship, int status, size_t i) {
         if(i < 50) {
                 if(enemy->rect.y > 720 || enemy->rect.x < 0 - enemy->rect.w) {
-                        enemy->rect.x = 100 + rng(1280-100);
+                        enemy->rect.x = 200 + rng(1280-200);
                         enemy->rect.y = -49 * 300;
                         enemy->angle = 270;
                         ++enemy->passes;
@@ -177,7 +178,7 @@ static inline void lvl6(Enemy *enemy, const SDL_Rect *ship, int status, size_t i
                 else lvl6_enemy_move(enemy, ship, status);
         } else {
                 if(enemy->rect.y < 0 || enemy->rect.x < 0 - enemy->rect.w) {
-                        enemy->rect.x = 100 + rng(1280-100);
+                        enemy->rect.x = 200 + rng(1280-200);
                         enemy->rect.y = 500 + 49 * 300;
                         enemy->angle = 90;
                         ++enemy->passes;
@@ -225,13 +226,14 @@ static inline void boss_battle(Boss *boss, GameData *data, Mix_Chunk *laser) {
                                                 boss->angles[2] = (boss->angles[2] - 5 + 360) % 360;
                                         } break;
                 }
-                create_bb(data, &boss->rect, boss->angles[0], laser);
-                create_bb(data, &boss->rect, boss->angles[1], laser);
-                create_bb(data, &boss->rect, boss->angles[2], laser);
+                create_bb(data, &boss->rect, boss->angles[0]);
+                create_bb(data, &boss->rect, boss->angles[1]);
+                create_bb(data, &boss->rect, boss->angles[2]);
                 if(boss->pattern >= 3) {
-                        create_bb(data, &boss->rect, boss->angles[3], laser);
-                        create_bb(data, &boss->rect, boss->angles[4], laser);
+                        create_bb(data, &boss->rect, boss->angles[3]);
+                        create_bb(data, &boss->rect, boss->angles[4]);
                 }
+                if(!data->muted) Mix_PlayChannel(-1, laser, 0);
                 boss->bullet_timeout = BOSS_BULLET_TIMEOUT;
         } else --boss->bullet_timeout;
 

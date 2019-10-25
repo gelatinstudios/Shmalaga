@@ -84,9 +84,9 @@ int init_data(GameData *data) {
         data->keys[LEFT_K] = SDL_SCANCODE_LEFT;
         data->keys[RIGHT_K] = SDL_SCANCODE_RIGHT;
         data->keys[SHOOT_K] = SDL_SCANCODE_Z;
+        data->keys[SLOW_K] = SDL_SCANCODE_LSHIFT;
 
         data->keys[MENU_K] = SDLK_ESCAPE;
-        data->keys[PAUSE_K] = SDLK_p;
         data->keys[FSCREEN_K] = SDLK_f;
         data->keys[MUTE_K] = SDLK_m;
         data->keys[RESET_K] = SDLK_r;
@@ -108,6 +108,7 @@ int init_data(GameData *data) {
         for(size_t i = 0; i < 3; ++i)
                 data->score.name[i] = 'A';
         data->score.val = 0;
+        data->player_score_index = -1;
 
         data->lives = LIVES;
         data->life_milestone = 0;

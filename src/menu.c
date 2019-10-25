@@ -2,19 +2,19 @@
 
 #define VOL_SCALE 8
 
-static inline void exit_menu(GameData *, Sounds *);
+static inline void exit_menu(GameData *);
 static inline void render_as_selected(SDL_Renderer *, SDL_Texture *, const SDL_Rect *);
 static inline void render_key(SDL_Renderer *, TTF_Font *, const SDL_Rect *, const char *, const char *, int, Uint8);
 static inline void render_volume(SDL_Renderer *, TTF_Font *, const SDL_Rect *, const char *, int, int);
 
-int menu_handler(GameData *data, Sounds *sounds, SDL_Event *event) {
+int menu_handler(GameData *data, SDL_Event *event) {
         int quit = 0;
 
         if(event->type != SDL_KEYDOWN) return 0;
         switch(data->gamestate) {
                 case MENU:
                         switch(event->key.keysym.sym) {
-                                case SDLK_ESCAPE:       exit_menu(data, sounds);
+                                case SDLK_ESCAPE:       exit_menu(data);
                                                         break;
 
                                 case SDLK_UP:           data->selected = (data->selected - 1 + 3) % 3;
@@ -52,7 +52,7 @@ int menu_handler(GameData *data, Sounds *sounds, SDL_Event *event) {
                                 case SDLK_RIGHT:        if(data->selected < 5) data->selected += 5;
                                                         break;
 
-                                case SDLK_ESCAPE:       exit_menu(data, sounds);
+                                case SDLK_ESCAPE:       exit_menu(data);
                                                         break;
 
                                 case SDLK_RETURN:       if(data->selected == 10) {
@@ -62,14 +62,17 @@ int menu_handler(GameData *data, Sounds *sounds, SDL_Event *event) {
                                                         return 0;
                         } break;
                 case KEYSET_MODE:
-                        if(data->selected < 5) data->keys[data->selected] = event->key.keysym.scancode;
+                        if(data->selected < 6) data->keys[data->selected] = event->key.keysym.scancode;
                         else data->keys[data->selected] = event->key.keysym.sym;
                         data->gamestate = CONTROLS;
                         return 0;
                 case SOUND:
                         switch(event->key.keysym.sym) {
-                                case SDLK_RETURN:       if(data->selected == 3) data->muted = !data->muted;
-                                                        else if(data->selected == 4) {
+                                case SDLK_RETURN:       if(data->selected == 3) {
+                                                                data->muted = !data->muted;
+                                                                if(data->muted) Mix_PauseMusic();
+                                                                else Mix_ResumeMusic();
+                                                        } else if(data->selected == 4) {
                                                                 data->selected = 0;
                                                                 data->gamestate = MENU;
                                                         } break;
@@ -80,7 +83,7 @@ int menu_handler(GameData *data, Sounds *sounds, SDL_Event *event) {
                                 case SDLK_DOWN:         data->selected = (data->selected + 1) % 5;
                                                         break;
 
-                                case SDLK_ESCAPE:       exit_menu(data, sounds);
+                                case SDLK_ESCAPE:       exit_menu(data);
                                                         break;
                         }
 
@@ -111,11 +114,10 @@ int menu_handler(GameData *data, Sounds *sounds, SDL_Event *event) {
         return quit;
 }
 
-static inline void exit_menu(GameData *data, Sounds *sounds) {
+static inline void exit_menu(GameData *data) {
         data->selected = 0;
         data->gamestate = IN_GAME;
-        if(data->level == 7) Mix_PlayMusic(sounds->boss_music, -1);
-        else Mix_PlayMusic(sounds->main_music, -1);
+        if(!data->muted) Mix_ResumeMusic();
 }
 
 void render_menu(GameData *data, SDL_Renderer *rend, TTF_Font *font, SDL_Texture *menu[]) {
@@ -142,7 +144,7 @@ void render_menu(GameData *data, SDL_Renderer *rend, TTF_Font *font, SDL_Texture
                 }
                 case CONTROLS:
                 case KEYSET_MODE: {
-                        const char *actions[] = {"MOVE UP", "MOVE DOWN", "MOVE LEFT", "MOVE RIGHT", "SHOOT", "MENU", "PAUSE", "FULLSCREEN", "MUTE", "RESET"};
+                        const char *actions[] = {"MOVE UP", "MOVE DOWN", "MOVE LEFT", "MOVE RIGHT", "SHOOT", "SLOW", "MENU", "FULLSCREEN", "MUTE", "RESET"};
 
                         SDL_Rect rect = {100, 80, 490, 75};
                         for(size_t i = 0; i < 10; ++i) {
@@ -152,7 +154,7 @@ void render_menu(GameData *data, SDL_Renderer *rend, TTF_Font *font, SDL_Texture
                                 }
                                 rect.y += 90;
 
-                                const char *keyname = i < 5 ? SDL_GetScancodeName(data->keys[i]) : SDL_GetKeyName(data->keys[i]);
+                                const char *keyname = i < 6 ? SDL_GetScancodeName(data->keys[i]) : SDL_GetKeyName(data->keys[i]);
                                 render_key(rend, font, &rect, actions[i], keyname, data->selected == i, data->gamestate);
                         }
 

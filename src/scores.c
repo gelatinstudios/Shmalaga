@@ -13,7 +13,7 @@ void print_scores(Score scores[10]) {
         fclose(file);
 }
 
-void scores_update(Score scores[10], Score score) {
+size_t scores_update(Score scores[10], Score score) {
         assert(score.val > scores[9].val);
 
         size_t i = 8;
@@ -22,4 +22,5 @@ void scores_update(Score scores[10], Score score) {
                 --i;
         }
         scores[i+1] = score;
+        return i + 1;
 }

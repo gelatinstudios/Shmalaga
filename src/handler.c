@@ -8,7 +8,7 @@ static inline int input_handler(GameData *, SDL_Window *, Sounds *);
 static inline void action_handler(GameData *, Sounds *);
 static inline void enemy_handler(GameData *, Enemy *, Mix_Chunk *);
 static inline void player_death(GameData *, Mix_Chunk *);
-static inline void reset(GameData *);
+static void reset(GameData *, Mix_Music *);
 
 int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
         int quit = input_handler(data, win, sounds);
@@ -23,11 +23,14 @@ static inline int input_handler(GameData *data, SDL_Window *win, Sounds *sounds)
         if(data->gamestate == IN_GAME && data->lives && (data->player_status == ALIVE || data->player_status == DEAD)) {
                 if(data->bullet_timeout) --data->bullet_timeout;
 
-                int vel = SHIP_VEL;
-                if(SDL_GetModState() & KMOD_SHIFT) vel /= 2;
+                register int vel = SHIP_VEL;
 
                 const Uint8 *state = SDL_GetKeyboardState(NULL);
-                if(state[data->keys[SHOOT_K]] && !data->bullet_timeout) create_gb(data, sounds->sfx[SND_LASER]);
+                if(state[data->keys[SLOW_K]]) vel /= 2;
+                if(state[data->keys[SHOOT_K]] && !data->bullet_timeout) {
+                        create_gb(data);
+                        if(!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_LASER], 0);
+                }
                 if(state[data->keys[LEFT_K]] && data->ship.x > 0) data->ship.x -= vel;
                 if(state[data->keys[RIGHT_K]] && data->ship.x < 1280 - data->ship.w) data->ship.x += vel;
                 if(state[data->keys[UP_K]] && data->ship.y > 0) data->ship.y -= vel;
@@ -44,17 +47,30 @@ static inline int input_handler(GameData *data, SDL_Window *win, Sounds *sounds)
                 if(data->gamestate != NAME_ENTRY) {
                         if(pressed == data->keys[MENU_K] && data->gamestate < MENU) {
                                 data->gamestate = MENU;
-                                Mix_PlayMusic(sounds->pause_music, -1);
+                                Mix_PauseMusic();
+                                //Mix_PlayMusic(sounds->pause_music, -1);
                                 break;
-                        }
-                        else if(pressed == data->keys[PAUSE_K]) data->gamestate = !data->gamestate;
-                        else if(pressed == data->keys[MUTE_K]) data->muted = !data->muted;
-                        else if(pressed == data->keys[FSCREEN_K]) {
-                                data->gamestate = PAUSED;
+                        //}
+                        // else if(pressed == data->keys[PAUSE_K]) {
+                        //         if(data->gamestate == IN_GAME) {
+                        //                 data->gamestate = PAUSED;
+                        //                 Mix_PauseMusic();
+                        //         } else if(data->gamestate == PAUSED) {
+                        //                 data->gamestate = IN_GAME;
+                        //                 Mix_ResumeMusic();
+                        //         }
+                        } else if(pressed == data->keys[MUTE_K]) {
+                                data->muted = !data->muted;
+                                if(data->muted) Mix_PauseMusic();
+                                else Mix_ResumeMusic();
+                        } else if(pressed == data->keys[FSCREEN_K]) {
+                                //data->gamestate = PAUSED;
                                 SDL_SetWindowFullscreen(win, data->fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
                                 data->fullscreen = !data->fullscreen;
-                        } else if(pressed == data->keys[RESET_K]) reset(data);
-                        else if(pressed == SDLK_RETURN && data->gamestate == IN_GAME && !data->lives) {
+                        } else if(pressed == data->keys[RESET_K]) reset(data, sounds->main_music);
+                        else if((pressed == SDLK_RETURN && data->gamestate == IN_GAME) && ((data->level == 7 && data->boss.status == DEAD) || !data->lives)) {
+                                Mix_PlayMusic(sounds->pause_music, -1);
+                                if(data->muted) Mix_PauseMusic();
                                 if(data->score.val > data->leaderboard[9].val) {
                                         data->gamestate = NAME_ENTRY;
                                         break;
@@ -67,8 +83,8 @@ static inline int input_handler(GameData *data, SDL_Window *win, Sounds *sounds)
 
                 if(data->gamestate == NAME_ENTRY) name_handler(data, &event);
                 else if(data->gamestate == LEADERBOARD) {
-                        if(pressed == SDLK_RETURN) reset(data);
-                } else if(data->gamestate >= MENU) quit |= menu_handler(data, sounds, &event);
+                        if(pressed == SDLK_RETURN) reset(data, sounds->main_music);
+                } else if(data->gamestate >= MENU) quit |= menu_handler(data,&event);
                 else if(data->gamestate == STARTING_SCREEN) {
                         if(data->selected == 10) data->secret |= data->secret >> 4;
 
@@ -116,6 +132,11 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
         if(!data->living_enemies && data->level <= 7) {
                 ++data->level;
                 load_level(data);
+
+                if(data->level == 7) {
+                        Mix_PlayMusic(sounds->boss_music, -1);
+                        if(data->muted) Mix_PauseMusic();
+                }
         }
 
         //player death sprite update
@@ -156,6 +177,7 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
                 //data->boss.explosion_timeout = BOSS_EXPLOSION_TIMEOUT;
                 data->boss.new_exp_timeout = NEW_EXP_TIMEOUT;
                 //if(!data->muted) Mix_PlayChannel(-1, sounds->explosion, 0);
+                data->score.won = 1;
         }
         if(data->boss.status > ALIVE && data->boss.status < DEAD) {
                 if(data->boss.new_exp_timeout) {
@@ -185,10 +207,12 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
                 else --data->respawn_timeout;
         }
 
-        if(data->score.val >= ONE_UP * (data->life_milestone+1)) {
+        //1UP
+        if(data->score.val >= ONE_UP * (data->life_milestone + 1)) {
                 ++data->lives;
                 ++data->life_milestone;
                 data->one_up_timeout = ONE_UP_TIMEOUT;
+                Mix_PlayChannel(-1, sounds->sfx[SND_CHRD], 0);
         }
 
         //delete off-screen bullets
@@ -224,13 +248,16 @@ static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explos
         }
 }
 
-static inline void reset(GameData *data) {
+static void reset(GameData *data, Mix_Music *music) {
         data->gamestate = IN_GAME;
 
         data->level = 1;
 
         data->score.val = 0;
+        data->score.won = 0;
+        data->player_score_index = -1;
         data->lives = 4;
+        data->life_milestone = 0;
 
         data->ship.x = 1280/4;
         data->ship.y = 720/2 - 56/2;
@@ -254,6 +281,9 @@ static inline void reset(GameData *data) {
         data->boss.angles[2] = 330;
         data->boss.angles[3] = 15;
         data->boss.angles[4] = 345;
+
+        Mix_PlayMusic(music, -1);
+        if(data->muted) Mix_PauseMusic();
 
         load_level(data);
 }

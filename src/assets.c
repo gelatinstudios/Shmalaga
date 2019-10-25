@@ -32,8 +32,8 @@ static inline void load_textures(SDL_Renderer *rend, TTF_Font *font, Textures *t
         for(size_t i = 0; i < LNGTH(textures->menu); ++i)
                 textures->menu[i] = text_load(rend, font, menu_texts[i]);
 
-        const char *texts[] = {"PAUSED", "PRESS ENTER", "sound muted", "YOU WIN", "YOU'RE DEAD", "Press ENTER",
-                              "LIVES:", "YOU MADE THE LEADERBOARD!", "Press ENTER when you're done", "LEADERBOARD"};
+        const char *texts[] = {"PAUSED", "PRESS ENTER", "sound muted", "YOU WIN!!!", "YOU'RE DEAD", "Press ENTER",
+                              "LIVES:", "BOSS BATTLE!!!", "YOU MADE THE LEADERBOARD!", "Press ENTER when you're done", "LEADERBOARD"};
         for(size_t i = 0; i < LNGTH(textures->texts); ++i)
                 textures->texts[i] = text_load(rend, font, texts[i]);
 
@@ -97,7 +97,7 @@ static inline void load_sounds(Sounds *sounds) {
         if(!sounds->boss_music)
                 fprintf(stderr, "error loading boss_music:\n\t%s\n", Mix_GetError());
 
-        const char *sfx[] = {"laser.ogg", "badlaser.ogg", "newexplosion1.ogg", "thunk.ogg", "lowerthunk.ogg", "powerchord.ogg"};
+        const char *sfx[] = {"laser.ogg", "badlaser.ogg", "newexplosion2.ogg", "thunk.ogg", "lowerthunk.ogg", "powerchord.ogg"};
         for(size_t i = 0; i < LNGTH(sounds->sfx); ++i)
                 sounds->sfx[i] = sound_load(sfx[i]);
 }

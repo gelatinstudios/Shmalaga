@@ -7,14 +7,15 @@
 
 void GameData::load_level(void) {
         typedef void (GameData::*level_ptr)();
-        level_ptr load_level_ptr[] = {&GameData::load_level_1,
-                                            &GameData::load_level_2,
-                                            &GameData::load_level_3,
-                                            &GameData::load_level_4,
-                                            &GameData::load_level_5,
-                                            &GameData::load_level_6,
-                                            &GameData::load_level_7,};
+        level_ptr load_level_ptr[] = { &GameData::load_level_1,
+                                       &GameData::load_level_2,
+                                       &GameData::load_level_3,
+                                       &GameData::load_level_4,
+                                       &GameData::load_level_5,
+                                       &GameData::load_level_6,
+                                       &GameData::load_level_7 };
 
+        static_assert(level <= 7, "load_level() called with invalid level");
         (this->*load_level_ptr[level-1])();
 
         if(level >= 2 && level < 7) {
@@ -31,14 +32,14 @@ void GameData::load_level(void) {
         level_timeout = LEVEL_TIMEOUT;
 }
 
-void GameData::load_level_1(void) {
+inline void GameData::load_level_1(void) {
         enemies.resize(1);
 
         enemies[0].rect.x = 1280 * 2;
         enemies[0].rect.y = (729 - 60) / 2;
 }
 
-void GameData::load_level_2(void) {
+inline void GameData::load_level_2(void) {
         enemies.resize(201);
 
         for(size_t j = 0; j < 3; ++j) {
@@ -133,7 +134,7 @@ void GameData::load_level_2(void) {
         }
 }
 
-void GameData::load_level_3(void) {
+inline void GameData::load_level_3(void) {
         enemies.resize(150);
 
         for(size_t i = 0; i < 25; ++i) {
@@ -152,7 +153,7 @@ void GameData::load_level_3(void) {
                 enemies[i+75].flag = 1;
         }
 }
-void GameData::load_level_4(void) {
+inline void GameData::load_level_4(void) {
         enemies.resize(150);
 
         for(size_t i = 0; i < 25; ++i) {
@@ -172,7 +173,7 @@ void GameData::load_level_4(void) {
         }
 }
 
-void GameData::load_level_5(void) {
+inline void GameData::load_level_5(void) {
         enemies.resize(70);
 
         for(size_t i = 0; i < 7; ++i) {
@@ -184,7 +185,7 @@ void GameData::load_level_5(void) {
         }
 }
 
-void GameData::load_level_6(void) {
+inline void GameData::load_level_6(void) {
         enemies.resize(150);
 
         for(size_t j = 0; j < 50; ++j) {
@@ -219,7 +220,7 @@ void GameData::load_level_6(void) {
         }
 }
 
-void GameData::load_level_7(void) {
+inline void GameData::load_level_7(void) {
         enemies.clear();
 
         gold_enemy.status = DEAD;

@@ -197,7 +197,7 @@ static inline void load_level_6(GameData *data) {
         data->enemy_count = data->living_enemies = 150;
 
         for(size_t j = 0; j < 50; ++j) {
-                data->enemies[j].rect.x = 100 + rng(1280-100);
+                data->enemies[j].rect.x = 200 + rng(1280-200);
                 data->enemies[j].rect.y = -500 - j * 300;
                 data->enemies[j].angle = 270;
 
@@ -215,7 +215,7 @@ static inline void load_level_6(GameData *data) {
                                 --j;
         }
         for(size_t j = 0; j < 50; ++j) {
-                data->enemies[j+2*50].rect.x = 100 + rng(1280-100);
+                data->enemies[j+2*50].rect.x = 200 + rng(1280-200);
                 data->enemies[j+2*50].rect.y = 720 + 500 + j * 300;
                 data->enemies[j+2*50].angle = 90;
 

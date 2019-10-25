@@ -28,7 +28,7 @@ Assets::Assets(std::shared_ptr<SDL_Renderer> rend) {
 
         std::cout << "loading sounds...\n";
         Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
-        sounds.music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/music.wav"), Mix_FreeMusic);
+        sounds.music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/main_music.wav"), Mix_FreeMusic);
         if (!sounds.music) {
                 std::cout << "couldn't load music\n";
                 exit(EXIT_FAILURE);

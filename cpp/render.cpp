@@ -51,7 +51,6 @@ void render(GameData &data, std::shared_ptr<SDL_Renderer> rend, Assets &assets) 
 
         data.boss.render(rend, assets.textures.sprites);
 
-
         //bullets
         for(auto gb : data.bullets.gb) {
                 const SDL_Rect rect = MK_GB_RECT(gb);

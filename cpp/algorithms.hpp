@@ -1,4 +1,7 @@
 
+#ifndef ALGORITHMS_H
+#define ALGORITHMS_H
+
 #define DEGRAD(x) ((x) * (M_PI/180.0))
 #define RADDEG(x) ((x) * (180.0/M_PI))
 
@@ -29,3 +32,5 @@ static inline bool is_on_screen(SDL_Rect rect) {
         bool y = rect.y + rect.h > 0 && rect.y < 720;
         return x && y;
 }
+
+#endif

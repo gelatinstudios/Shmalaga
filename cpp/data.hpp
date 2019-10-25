@@ -1,3 +1,5 @@
+#ifndef DATA_H
+#define DATA_H
 
 #define ENEM_P 500
 
@@ -25,29 +27,29 @@ enum {ALIVE, DYING_1, DYING_2, DYING_3, DYING_4, DEAD};
 enum {IN_GAME, PAUSED, STARTING_SCREEN, NAME_ENTRY, LEADERBOARD, MENU, CONTROLS, KEYSET_MODE, SOUND};
 
 //structures
-typedef struct {
+struct Color {
         Uint8 r, g, b;
-} Color;
+};
 
-typedef struct {
+struct Volumes {
         int master, music, sfx;
-} Volumes;
+};
 
-typedef struct {
+struct Star {
         SDL_Rect rect;
         Color color;
-} Star;
+};
 
 enum {UP_K, DOWN_K, LEFT_K, RIGHT_K, SHOOT_K, MENU_K, PAUSE_K, FSCREEN_K, MUTE_K, RESET_K};
 class GameData {
 private:
-        void load_level_1(void);
-        void load_level_2(void);
-        void load_level_3(void);
-        void load_level_4(void);
-        void load_level_5(void);
-        void load_level_6(void);
-        void load_level_7(void);
+        inline void load_level_1(void);
+        inline void load_level_2(void);
+        inline void load_level_3(void);
+        inline void load_level_4(void);
+        inline void load_level_5(void);
+        inline void load_level_6(void);
+        inline void load_level_7(void);
 public:
         SDL_Keycode keys[10];
 
@@ -105,3 +107,5 @@ extern const SDL_Color gold;
 
 extern const SDL_Rect explosion_clips[4];
 extern const SDL_Rect boss_clips[4];
+
+#endif

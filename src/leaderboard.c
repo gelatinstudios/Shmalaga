@@ -1,6 +1,6 @@
 #include "essentials.h"
 
-static inline void render_entry(const Score *, SDL_Renderer *, TTF_Font *, SDL_Rect *, size_t);
+static inline void render_entry(const Score *, SDL_Renderer *, TTF_Font *, SDL_Rect *, size_t, int);
 
 void name_handler(GameData *data, SDL_Event *event) {
         const char *keyname;
@@ -10,7 +10,7 @@ void name_handler(GameData *data, SDL_Event *event) {
                 case SDLK_RIGHT:        data->selected = (data->selected + 1) % 3; break;
                 case SDLK_LEFT:         data->selected = (data->selected - 1 + 3) % 3; break;
                 case SDLK_RETURN:       data->selected = 0;
-                                        scores_update(data->leaderboard, data->score);
+                                        data->player_score_index = scores_update(data->leaderboard, data->score);
                                         data->gamestate = LEADERBOARD;
                                         break;
 
@@ -40,7 +40,7 @@ void render_name(GameData *data, SDL_Renderer *rend, SDL_Texture *texts[], TTF_F
         SDL_RenderPresent(rend);
 }
 
-void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[], TTF_Font *font) {
+void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[], TTF_Font *font, size_t player_score_index) {
         const SDL_Rect title = {(1280 - 700) / 2, 50, 700, 100};
         SDL_RenderCopy(rend, texts[TXT_LDRBRD], NULL, &title);
 
@@ -51,7 +51,7 @@ void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[]
                         rect.y = 75;
                 } else if(i == 9) rect.x -= 30;
                 rect.y += 100;
-                render_entry(&scores[i], rend, font, &rect, i);
+                render_entry(&scores[i], rend, font, &rect, i, player_score_index == i);
         }
 
 
@@ -61,7 +61,7 @@ void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[]
         SDL_RenderPresent(rend);
 }
 
-static inline void render_entry(const Score *score, SDL_Renderer *rend, TTF_Font *font, SDL_Rect *rect, size_t n) {
+static inline void render_entry(const Score *score, SDL_Renderer *rend, TTF_Font *font, SDL_Rect *rect, size_t n, int current_player) {
         char name[4] = {0};
         if(!score->name[0])
                 strcpy(name, "---");
@@ -72,9 +72,9 @@ static inline void render_entry(const Score *score, SDL_Renderer *rend, TTF_Font
         }
 
         char str[30] = {0};
-        sprintf(str, "%zu %s: %u", n+1, name, score->val);
+        sprintf(str, "%c%c%zu %s: %u", score->won ? 'W' : ' ', ' ', n+1, name, score->val);
         rect->w = strlen(str) * 30;
-        SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
+        SDL_Surface *surf = TTF_RenderText_Blended(font, str, current_player ? gold : white);
         assert(surf);
         render_surf(rend, surf, rect);
 }

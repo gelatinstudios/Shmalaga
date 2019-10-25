@@ -1,11 +1,11 @@
+#ifndef WINREND_H
+#define WINREND_H
 
-class WinRend {
-public:
+struct WinRend {
         std::shared_ptr<SDL_Window> win;
         std::shared_ptr<SDL_Renderer> rend;
         WinRend(void);
         ~WinRend(void);
-
 };
 
 static inline void render_surf(std::shared_ptr<SDL_Renderer> rend, std::shared_ptr<SDL_Surface> surf, const SDL_Rect rect) {
@@ -13,3 +13,5 @@ static inline void render_surf(std::shared_ptr<SDL_Renderer> rend, std::shared_p
         SDL_RenderCopy(rend.get(), text, NULL, &rect);
         SDL_DestroyTexture(text);
 }
+
+#endif
