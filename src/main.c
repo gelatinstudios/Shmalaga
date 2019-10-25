@@ -53,8 +53,6 @@ int main(int argc, char *argv[]) {
 
         puts("exiting...");
         clean(&winrend, &assets);
-
-        exit(0);
 }
 
 static inline void error(const char *str, WinRend *winrend, Assets *assets) {
