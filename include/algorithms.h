@@ -8,7 +8,7 @@
 
 #define GB_W 15
 #define GB_H 10
-#define BB_W 12
+#define BB_W 20
 #define BB_H 8
 
 #define MK_GB_RECT(a) (const SDL_Rect){a.x, a.y, GB_W, GB_H}
