@@ -11,6 +11,7 @@ i had no real reason to use make other than to try it out; i've never used it be
 there is no make install right now, sorry
 
 just create a symbolic link in /usr/local/bin/ yourself if you want
+
 something like this:
 ```
 sudo ln -s ~/<whatever dir you put it in>/Shmalaga /usr/local/bin/Shmalaga
