@@ -28,25 +28,36 @@ Assets::Assets(std::shared_ptr<SDL_Renderer> rend) {
 
         std::cout << "loading sounds...\n";
         Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
-        sounds.music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/main_music.wav"), Mix_FreeMusic);
-        if (!sounds.music) {
-                std::cout << "couldn't load music\n";
+        sounds.main_music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/music_1.ogg"), Mix_FreeMusic);
+        if (!sounds.main_music) {
+                std::cout << "couldn't load main_music\n";
                 exit(EXIT_FAILURE);
         }
-        sounds.explosion = std::shared_ptr<Mix_Chunk>(Mix_LoadWAV("../sounds/explosion.wav"), Mix_FreeChunk);
-        if (!sounds.explosion) {
-                std::cout << "couldn't load explosion.wav\n";
+
+        Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+        sounds.pause_music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/wating.ogg"), Mix_FreeMusic);
+        if (!sounds.pause_music) {
+                std::cout << "couldn't load pause_music\n";
                 exit(EXIT_FAILURE);
         }
-        sounds.laser = std::shared_ptr<Mix_Chunk>(Mix_LoadWAV("../sounds/laser.wav"), Mix_FreeChunk);
-        if (!sounds.laser) {
-                std::cout << "couldn't load laser.wav\n";
+
+        Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 1024);
+        sounds.boss_music = std::shared_ptr<Mix_Music>(Mix_LoadMUS("../sounds/bossbattle"), Mix_FreeMusic);
+        if (!sounds.boss_music) {
+                std::cout << "couldn't load boss_music\n";
                 exit(EXIT_FAILURE);
         }
-        sounds.bad_laser = std::shared_ptr<Mix_Chunk>(Mix_LoadWAV("../sounds/bad_laser.wav"), Mix_FreeChunk);
-        if (!sounds.bad_laser) {
-                std::cout << "couldn't load bad_laser.wav\n";
-                exit(EXIT_FAILURE);
+
+
+        const char *sfx_filenames[] = {"laser.ogg", "badlaser.ogg", "newexplosion2.ogg", "thunk.ogg", "lowerthunk.ogg", "powerchord.ogg"};
+        for (size_t i = 0; i < LNGTH(sounds.sfx); ++i) {
+                char filename[40];
+                sprintf(filename, "%s%s", "../sounds/", sfx_filenames[i]);
+                sounds.sfx[i] = std::shared_ptr<Mix_Chunk>(Mix_LoadWAV(filename), Mix_FreeChunk);
+                if (!sounds.explosion) {
+                        std::cout << "couldn't load explosion.wav\n";
+                        exit(EXIT_FAILURE);
+                }
         }
 }
 

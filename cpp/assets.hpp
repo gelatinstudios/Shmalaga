@@ -11,11 +11,12 @@ struct Textures {
         std::shared_ptr<SDL_Texture> sparkle;
 };
 
+enum {SND_LASER, SND_BADLASER, SND_EXP, SND_THNK, SND_LWTHNK, SND_CHRD};
 struct Sounds {
-        std::shared_ptr<Mix_Music> music;
-        std::shared_ptr<Mix_Chunk> explosion;
-        std::shared_ptr<Mix_Chunk> laser;
-        std::shared_ptr<Mix_Chunk> bad_laser;
+        std::shared_ptr<Mix_Music> main_music;
+        std::shared_ptr<Mix_Music> pause_music;
+        std::shared_ptr<Mix_Music> boss_music;
+        std::shared_ptr<Mix_Chunk> sfx[6];
 };
 
 struct Assets {

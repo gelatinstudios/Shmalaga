@@ -206,10 +206,15 @@ int init_data(GameData *data) {
 
 int init_winrend(WinRend *winrend) {
         puts("initializing window and renderer...");
-        winrend->win = SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
+        if (SDL_GetNumVideoDisplays() < 1) return 1;
+        SDL_Rect display_bounds;
+        SDL_GetDisplayBounds(0, &display_bounds);
+        winrend->win = SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 3 * display_bounds.w / 4, 3 * display_bounds.h / 4, 0);
         if(!winrend->win) return 1;
         //SDL_SetWindowFullscreen(winrend->win, SDL_WINDOW_FULLSCREEN);
         winrend->rend = SDL_CreateRenderer(winrend->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        SDL_RenderSetLogicalSize(winrend->rend, 1280, 720);
+        SDL_ShowCursor(SDL_DISABLE);
         return !winrend->rend;
 }
 
