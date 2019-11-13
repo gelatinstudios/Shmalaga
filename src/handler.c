@@ -212,7 +212,7 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
                 ++data->lives;
                 ++data->life_milestone;
                 data->one_up_timeout = ONE_UP_TIMEOUT;
-                Mix_PlayChannel(-1, sounds->sfx[SND_CHRD], 0);
+                if(!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_CHRD], 0);
         }
 
         //delete off-screen bullets
