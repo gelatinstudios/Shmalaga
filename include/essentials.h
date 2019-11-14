@@ -1,7 +1,7 @@
 #ifndef ESSENTIALS_H
 #define ESSENTIALS_H
 
-#define NDEBUG 
+#define NDEBUG
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -29,7 +29,7 @@ int intro(Star *, SDL_Renderer *, TTF_Font *);
 
 int handler(GameData *, SDL_Window *, Sounds *);
 
-int menu_handler(GameData *,SDL_Event *);
+int menu_handler(GameData *, Mix_Chunk *[], SDL_Event *);
 void render_menu(GameData *, SDL_Renderer *, TTF_Font *, SDL_Texture *[]);
 
 void load_level(GameData *);

@@ -27,4 +27,19 @@ typedef struct {
 
 int load_assets(SDL_Renderer *, Assets *);
 
+static inline void play_sound(Mix_Chunk *sound, int x_pos, size_t index) {
+        x_pos = 2 * (x_pos - 1280/2) * 254 / 1280;
+        int left = 254, right = 254;
+        if (x_pos > 0) {
+                left -= x_pos;
+        } else {
+                right += x_pos;
+        }
+
+        printf("left: %d\nright: %d\n\n", left, right);
+
+        Mix_SetPanning(index+2, left, right);
+        Mix_PlayChannel(index+2, sound, 0);
+}
+
 #endif

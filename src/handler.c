@@ -29,7 +29,7 @@ static inline int input_handler(GameData *data, SDL_Window *win, Sounds *sounds)
                 if(state[data->keys[SLOW_K]]) vel /= 2;
                 if(state[data->keys[SHOOT_K]] && !data->bullet_timeout) {
                         create_gb(data);
-                        if(!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_LASER], 0);
+                        if(!data->muted) play_sound(sounds->sfx[SND_LASER], data->ship.x + data->ship.w, SND_LASER);
                 }
                 if(state[data->keys[LEFT_K]] && data->ship.x > 0) data->ship.x -= vel;
                 if(state[data->keys[RIGHT_K]] && data->ship.x < 1280 - data->ship.w) data->ship.x += vel;
@@ -84,7 +84,7 @@ static inline int input_handler(GameData *data, SDL_Window *win, Sounds *sounds)
                 if(data->gamestate == NAME_ENTRY) name_handler(data, &event);
                 else if(data->gamestate == LEADERBOARD) {
                         if(pressed == SDLK_RETURN) reset(data, sounds->main_music);
-                } else if(data->gamestate >= MENU) quit |= menu_handler(data,&event);
+                } else if(data->gamestate >= MENU) quit |= menu_handler(data, sounds->sfx, &event);
                 else if(data->gamestate == STARTING_SCREEN) {
                         if(data->selected == 10) data->secret |= data->secret >> 4;
 
@@ -212,7 +212,7 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
                 ++data->lives;
                 ++data->life_milestone;
                 data->one_up_timeout = ONE_UP_TIMEOUT;
-                if(!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_CHRD], 0);
+                if(!data->muted) Mix_PlayChannel(SND_CHRD+2, sounds->sfx[SND_CHRD], 0);
         }
 
         //delete off-screen bullets
@@ -222,7 +222,7 @@ static inline void action_handler(GameData *data, Sounds *sounds) {
 static inline void player_death(GameData *data, Mix_Chunk *explosion) {
         data->player_status = DYING_1;
         data->player_death_timeout = EXPLOSION_TIMEOUT;
-        if(!data->muted) Mix_PlayChannel(-1, explosion, 0);
+        if(!data->muted) play_sound(explosion, data->ship.x + data->ship.w/2, SND_EXP);
 }
 
 static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explosion) {
@@ -234,7 +234,7 @@ static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explos
                         enemy->status = DYING_1;
                         enemy->explosion_timeout = EXPLOSION_TIMEOUT;
                         destroy_gb(data, i);
-                        if(!data->muted) Mix_PlayChannel(-1, explosion, 0);
+                        if(!data->muted) play_sound(explosion, enemy->rect.x + enemy->rect.w/2, SND_EXP);
                         if(enemy->texture == SPR_GOLD_ENEMY) data->score.val += 2*ENEM_P;
                         else data->score.val += ENEM_P / pow(2, data->enemies[i].passes);
                 }

@@ -13,6 +13,16 @@ there is no make install right now, sorry
 
 # todo
 
--make sound fx stereo based on position
+~~-make sound fx stereo based on position~~
+
 -finish cpp version
+
 -write a make install rule that actually works
+
+# Bugs rn:
+
+-stereo panning isn't working perfectly
+
+-resolution issues in windowed mode (stars flickering, etc.)
+
+-fullscreen mode works has pauses and vsync issues on one of my computers

@@ -7,20 +7,23 @@ static inline void render_as_selected(SDL_Renderer *, SDL_Texture *, const SDL_R
 static inline void render_key(SDL_Renderer *, TTF_Font *, const SDL_Rect *, const char *, const char *, int, Uint8);
 static inline void render_volume(SDL_Renderer *, TTF_Font *, const SDL_Rect *, const char *, int, int);
 
-int menu_handler(GameData *data, SDL_Event *event) {
+int menu_handler(GameData *data, Mix_Chunk *sfx[], SDL_Event *event) {
         int quit = 0;
 
         if(event->type != SDL_KEYDOWN) return 0;
         switch(data->gamestate) {
                 case MENU:
                         switch(event->key.keysym.sym) {
-                                case SDLK_ESCAPE:       exit_menu(data);
+                                case SDLK_ESCAPE:       if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
+                                                        exit_menu(data);
                                                         break;
 
                                 case SDLK_UP:           data->selected = (data->selected - 1 + 3) % 3;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_DOWN:         data->selected = (data->selected + 1) % 3;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_RETURN:       switch(data->selected) {
@@ -33,38 +36,47 @@ int menu_handler(GameData *data, SDL_Event *event) {
                                                                         break;
 
                                                                 case 2: quit = 1;
-                                                        } break;
+                                                        }
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
+                                                        break;
                         } break;
                 case CONTROLS:
                         switch(event->key.keysym.sym) {
                                 case SDLK_UP:           if(data->selected == 10) data->selected = 4;
                                                         else if(data->selected == 5) data->selected = 10;
                                                         else  data->selected = (data->selected - 1 + 11) % 11;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_DOWN:         if(data->selected == 4) data->selected = 10;
                                                         else data->selected = (data->selected + 1) % 11;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_LEFT:         if(data->selected > 4 && data->selected != 10) data->selected -= 5;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_RIGHT:        if(data->selected < 5) data->selected += 5;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_ESCAPE:       exit_menu(data);
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
                                                         break;
 
                                 case SDLK_RETURN:       if(data->selected == 10) {
                                                                 data->selected = 0;
                                                                 data->gamestate = MENU;
                                                         } else data->gamestate = KEYSET_MODE;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
                                                         return 0;
                         } break;
                 case KEYSET_MODE:
                         if(data->selected < 6) data->keys[data->selected] = event->key.keysym.scancode;
                         else data->keys[data->selected] = event->key.keysym.sym;
                         data->gamestate = CONTROLS;
+                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
                         return 0;
                 case SOUND:
                         switch(event->key.keysym.sym) {
@@ -75,15 +87,20 @@ int menu_handler(GameData *data, SDL_Event *event) {
                                                         } else if(data->selected == 4) {
                                                                 data->selected = 0;
                                                                 data->gamestate = MENU;
-                                                        } break;
+                                                        }
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
+                                                        break;
 
                                 case SDLK_UP:           data->selected = (data->selected - 1 + 5) % 5;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
                                 case SDLK_DOWN:         data->selected = (data->selected + 1) % 5;
+                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
-                                case SDLK_ESCAPE:       exit_menu(data);
+                                case SDLK_ESCAPE:       if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);       
+                                                        exit_menu(data);
                                                         break;
                         }
 

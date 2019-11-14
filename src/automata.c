@@ -66,7 +66,7 @@ static inline void move_enemies(GameData *data, Sounds *sounds) {
                 }
                 if(is_on_screen(data->enemies[i].rect) && !rng(800)) {
                         create_bb(data, &data->enemies[i].rect, data->enemies[i].angle);
-                        if (!data->muted) Mix_PlayChannel(-1, sounds->sfx[SND_BADLASER], 0);
+                        if (!data->muted) play_sound(sounds->sfx[SND_BADLASER], rint(data->enemies[i].rect.x + data->enemies[i].rect.w/2.0 * (1.0 - cos(DEGRAD(data->enemies[i].angle))) - 12.0/2.0), SND_BADLASER);
                 }
         }
 
@@ -233,7 +233,7 @@ static inline void boss_battle(Boss *boss, GameData *data, Mix_Chunk *laser) {
                         create_bb(data, &boss->rect, boss->angles[3]);
                         create_bb(data, &boss->rect, boss->angles[4]);
                 }
-                if(!data->muted) Mix_PlayChannel(-1, laser, 0);
+                if(!data->muted) play_sound(laser, boss->rect.x, SND_BADLASER);
                 boss->bullet_timeout = BOSS_BULLET_TIMEOUT;
         } else --boss->bullet_timeout;
 
