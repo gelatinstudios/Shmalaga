@@ -1,6 +1,6 @@
 #include "essentials.h"
 
-#define LEVEL 1
+#define LEVEL 2
 #define LIVES 4
 
 static inline const char *title_generator(void);
@@ -78,6 +78,7 @@ const SDL_Rect boss_clips[4] = {
 };
 
 int init_data(GameData *data) {
+        //CNT_START;
         puts("initializing data...");
         data->keys[UP_K] = SDL_SCANCODE_UP;
         data->keys[DOWN_K] = SDL_SCANCODE_DOWN;
@@ -118,9 +119,9 @@ int init_data(GameData *data) {
         for(size_t i = 0; i < MAX_STARS; ++i) {
                 data->stars[i].rect.x = rng(MAX_STAR_POS);
                 data->stars[i].rect.y = rng(721);
-                data->stars[i].rect.h = data->stars[i].rect.w = 1 + rng(4);
+                data->stars[i].rect.h = data->stars[i].rect.w = 3 + rng(2);
 
-                Uint8 n = 1 + rng(100);
+                Uint8 n = 1u + rng(100);
                 if(n <= 80) { //white
                         data->stars[i].color.r = 255;
                         data->stars[i].color.g = 255;
@@ -201,6 +202,8 @@ int init_data(GameData *data) {
         //         data->bb[i].rect.w = 12;
         //         data->bb[i].rect.h = 8;
         // }
+
+        //CNT_PRINT;
         return 0;
 }
 
@@ -209,12 +212,19 @@ int init_winrend(WinRend *winrend) {
         if (SDL_GetNumVideoDisplays() < 1) return 1;
         SDL_Rect display_bounds;
         SDL_GetDisplayBounds(0, &display_bounds);
-        winrend->win = SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 3 * display_bounds.w / 4, 3 * display_bounds.h / 4, 0);
+        const int w = (3 * display_bounds.w / 4);
+        winrend->win = SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, 9 * w / 16, 0);
+        // winrend->win = SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0);
         if(!winrend->win) return 1;
         //SDL_SetWindowFullscreen(winrend->win, SDL_WINDOW_FULLSCREEN);
         winrend->rend = SDL_CreateRenderer(winrend->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         SDL_RenderSetLogicalSize(winrend->rend, 1280, 720);
         SDL_ShowCursor(SDL_DISABLE);
+
+        SDL_Surface *icon = IMG_Load("sprites/mascot.png");
+        SDL_SetWindowIcon(winrend->win, icon);
+        SDL_FreeSurface(icon);
+
         return !winrend->rend;
 }
 

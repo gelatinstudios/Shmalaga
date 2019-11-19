@@ -185,14 +185,23 @@ GameData::GameData(void) {
 
 WinRend::WinRend(void) {
         std::cout << "initializing window and renderer...\n";
-        win = std::shared_ptr<SDL_Window>(SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, 0), SDL_DestroyWindow);
+
+        if (SDL_GetNumVideoDisplays() < 1) return 1;
+        SDL_Rect display_bounds;
+        SDL_GetDisplayBounds(0, &display_bounds);
+        const int w = (3 * display_bounds.w / 4);
+        win = std::shared_ptr<SDL_Window>(SDL_CreateWindow(title_generator(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, 9 * w / 16, 0), SDL_DestroyWindow);
         rend = std::shared_ptr<SDL_Renderer>(SDL_CreateRenderer(&*win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC), SDL_DestroyRenderer);
+        SDL_RenderSetLogicalSize(rend.get(), 1280, 720);
+        SDL_ShowCursor(SDL_DISABLE);
+
+        SDL_Surface *icon = IMG_Load("sprites/mascot.png");
+        SDL_SetWindowIcon(win.get(), icon);
+        SDL_FreeSurface(icon);
 }
 
 WinRend::~WinRend(void) {
         std::cout << "destroying window and renderer...\n";
-        // SDL_DestroyWindow(&*win);
-        // SDL_DestroyRenderer(&*rend);
 }
 
 static const char *title_generator(void) {

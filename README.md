@@ -22,7 +22,3 @@ there is no make install right now, sorry
 # Bugs rn:
 
 -stereo panning isn't working perfectly
-
--resolution issues in windowed mode (stars flickering, etc.)
-
--fullscreen mode works has pauses and vsync issues on one of my computers

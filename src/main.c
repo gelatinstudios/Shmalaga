@@ -7,6 +7,13 @@
 static inline void error(const char *, WinRend *, Assets *);
 
 int main(int argc, char *argv[]) {
+
+#ifdef SHMALAGA_DEBUG
+        cpu_set_t mask;
+        CPU_ZERO(&mask);
+        CPU_SET(0, &mask);
+        sched_setaffinity(0, sizeof(mask), &mask);
+#endif
         GameData data = {0};
         WinRend winrend = {0};
         Assets assets = {0};

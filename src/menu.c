@@ -61,8 +61,8 @@ int menu_handler(GameData *data, Mix_Chunk *sfx[], SDL_Event *event) {
                                                         if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
-                                case SDLK_ESCAPE:       exit_menu(data);
-                                                        if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
+                                case SDLK_ESCAPE:       if(!data->muted) Mix_PlayChannel(-1, sfx[SND_THNK], 0);
+                                                        exit_menu(data);
                                                         break;
 
                                 case SDLK_RETURN:       if(data->selected == 10) {
@@ -99,7 +99,7 @@ int menu_handler(GameData *data, Mix_Chunk *sfx[], SDL_Event *event) {
                                                         if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         break;
 
-                                case SDLK_ESCAPE:       if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);       
+                                case SDLK_ESCAPE:       if(!data->muted) Mix_PlayChannel(-1, sfx[SND_LWTHNK], 0);
                                                         exit_menu(data);
                                                         break;
                         }

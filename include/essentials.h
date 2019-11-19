@@ -3,6 +3,8 @@
 
 #define NDEBUG
 
+#define _GNU_SOURCE
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -11,6 +13,28 @@
 #include <math.h>
 #include <tgmath.h>
 #include <assert.h>
+
+#ifdef SHMALAGA_DEBUG
+#include <sched.h>
+
+static inline size_t rdtsc(){
+    unsigned int lo,hi;
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((size_t)hi << 32) | lo;
+}
+
+size_t cycles;
+
+#define CNT_START (cycles = rdtsc())
+// #define CNT_RESTART (cycles = rdstc())
+#define CNT_PRINT(x) (printf("%s: clock cycles: %zu\n", (x), rdtsc() - cycles))
+
+#endif
+
+#ifndef SHMALAGA_DEBUG
+#define CNT_START
+#define CNT_PRINT()
+#endif
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -23,6 +47,7 @@
 #include "assets.h"
 #include "bullets.h"
 #include "winrend.h"
+
 
 
 int intro(Star *, SDL_Renderer *, TTF_Font *);

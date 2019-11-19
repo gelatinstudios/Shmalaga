@@ -36,7 +36,7 @@ static inline void play_sound(Mix_Chunk *sound, int x_pos, size_t index) {
                 right += x_pos;
         }
 
-        printf("left: %d\nright: %d\n\n", left, right);
+        //printf("left: %d\nright: %d\n\n", left, right);
 
         Mix_SetPanning(index+2, left, right);
         Mix_PlayChannel(index+2, sound, 0);
