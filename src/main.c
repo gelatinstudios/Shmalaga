@@ -9,10 +9,10 @@ static inline void error(const char *, WinRend *, Assets *);
 int main(int argc, char *argv[]) {
 
 #ifdef SHMALAGA_DEBUG
-        cpu_set_t mask;
-        CPU_ZERO(&mask);
-        CPU_SET(0, &mask);
-        sched_setaffinity(0, sizeof(mask), &mask);
+        cpu_set_t cpu_set;
+        CPU_ZERO(&cpu_set);
+        CPU_SET(0, &cpu_set);
+        sched_setaffinity(0, sizeof(cpu_set), &cpu_set);
 #endif
         GameData data = {0};
         WinRend winrend = {0};
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
         err = init_winrend(&winrend);
         if(err) error("load window and renderer", &winrend, &assets);
 
-        err = load_assets(winrend.rend, &assets);
+        err = load_assets(winrend.rend, &assets, data.leaderboard[0].val);
         if(err) error("load assets", &winrend, &assets);
 
         Mix_Volume(-1, MIX_MAX_VOLUME/2);
@@ -48,6 +48,7 @@ int main(int argc, char *argv[]) {
                 starting_tick = SDL_GetTicks();
 
                 quit = handler(&data, winrend.win, &assets.sounds);
+                update(&data, winrend.rend, &assets.sounds, assets.textures.score_texts[SCORE_TXT], assets.font);
                 automata(&data, &assets.sounds);
                 render(&data, winrend.rend, &assets);
 

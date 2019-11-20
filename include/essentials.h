@@ -1,7 +1,7 @@
 #ifndef ESSENTIALS_H
 #define ESSENTIALS_H
 
-#define NDEBUG
+//#define NDEBUG
 
 #define _GNU_SOURCE
 
@@ -29,11 +29,11 @@ size_t cycles;
 // #define CNT_RESTART (cycles = rdstc())
 #define CNT_PRINT(x) (printf("%s: clock cycles: %zu\n", (x), rdtsc() - cycles))
 
-#endif
+#else
 
-#ifndef SHMALAGA_DEBUG
 #define CNT_START
-#define CNT_PRINT()
+#define CNT_PRINT(x) {}
+
 #endif
 
 #include <SDL2/SDL.h>
@@ -60,6 +60,8 @@ void render_menu(GameData *, SDL_Renderer *, TTF_Font *, SDL_Texture *[]);
 void load_level(GameData *);
 
 void automata(GameData *, Sounds *sounds);
+
+void update(GameData *data, SDL_Renderer *rend, Sounds *sounds, SDL_Texture *score_text, TTF_Font *font);
 
 void render(GameData *, SDL_Renderer *, Assets *);
 

@@ -31,6 +31,7 @@ void render_name(GameData *data, SDL_Renderer *rend, SDL_Texture *texts[], TTF_F
                 if(data->selected == i) surf = TTF_RenderText_Blended(font, letter_str, gold);
                 else surf = TTF_RenderText_Blended(font, letter_str, white);
                 rect.x += 150;
+                //TODO: this shall go away
                 render_surf(rend, surf, &rect);
         }
 
@@ -41,6 +42,7 @@ void render_name(GameData *data, SDL_Renderer *rend, SDL_Texture *texts[], TTF_F
 }
 
 void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[], TTF_Font *font, size_t player_score_index) {
+        CNT_START;
         const SDL_Rect title = {(1280 - 700) / 2, 50, 700, 100};
         SDL_RenderCopy(rend, texts[TXT_LDRBRD], NULL, &title);
 
@@ -59,6 +61,7 @@ void render_leaderboard(Score scores[], SDL_Renderer *rend, SDL_Texture *texts[]
         SDL_RenderCopy(rend, texts[TXT_PRESSR], NULL, &press_enter_rect);
 
         SDL_RenderPresent(rend);
+        CNT_PRINT("render leaderboard");
 }
 
 static inline void render_entry(const Score *score, SDL_Renderer *rend, TTF_Font *font, SDL_Rect *rect, size_t n, int current_player) {

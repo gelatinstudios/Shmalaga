@@ -3,7 +3,8 @@
 void load_scores(Score scores[10]) {
         FILE *file = fopen("scores", "r");
         if(!file) return;
-        fread(scores, sizeof(Score), 10, file);
+        size_t n = fread(scores, sizeof(Score), 10, file);
+        assert(n == 10);
         fclose(file);
 }
 
