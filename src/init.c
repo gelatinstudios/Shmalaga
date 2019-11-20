@@ -8,7 +8,7 @@ static inline const char *title_generator(void);
 const SDL_Color white = {255, 255, 255, 255};
 const SDL_Color black = {0, 0, 0, 255};
 const SDL_Color gold = {255, 215, 0, 255};
-
+//
 const SDL_Keycode lsd_code[] = {
         SDLK_UP,
         SDLK_UP,
