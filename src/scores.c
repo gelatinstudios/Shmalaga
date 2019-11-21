@@ -1,7 +1,7 @@
 #include "essentials.h"
 
 void load_scores(Score scores[10]) {
-        FILE *file = fopen("scores", "r");
+        FILE *file = fopen("scores", "rb");
         if(!file) return;
         size_t n = fread(scores, sizeof(Score), 10, file);
         assert(n == 10);
@@ -9,7 +9,7 @@ void load_scores(Score scores[10]) {
 }
 
 void print_scores(Score scores[10]) {
-        FILE *file = fopen("scores", "w");
+        FILE *file = fopen("scores", "wb");
         fwrite(scores, sizeof(Score), 10, file);
         fclose(file);
 }
