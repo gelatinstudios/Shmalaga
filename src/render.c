@@ -1,9 +1,9 @@
 #include "essentials.h"
 
 static inline void render_player(GameData *, SDL_Renderer *, Textures *);
-static inline void render_enemy(Enemy *, Sparkle *, TTF_Font *, SDL_Renderer *, Textures *);
+static inline void render_enemy(Enemy *, Sparkle *,SDL_Renderer *, Textures *);
 static inline void render_boss(Boss *, SDL_Renderer *, SDL_Texture *[]);
-static inline void render_scores(GameData *, SDL_Renderer *, Textures *, TTF_Font *);
+static inline void render_scores(GameData *, SDL_Renderer *, Textures *);
 
 const SDL_Rect muted_rect = {10, 720-30-10, 250, 30};
 const SDL_Rect lives_rect = {1280-100-10, 720-20-50, 100, 20};
@@ -17,9 +17,8 @@ const SDL_Rect n_rect = {(1280 - 400) / 2 + (5 * 400 / 7) + 2 * 57, (720 - 55) /
 const SDL_Rect boss_battle_rect = {640-250+10, 390-(390/2)-100, 500, 100};
 const SDL_Rect win_rect = {(1280 - 700) / 2, (720 - 100) / 2, 700, 100};
 
-//TODO: remove unused parameters
-
 void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
+        D_START;
         if(!(data->secret & 0x01)) SDL_RenderClear(rend);
 
         //stars
@@ -33,13 +32,18 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
 
         if(data->gamestate == STARTING_SCREEN) {
                 SDL_RenderCopy(rend, assets->textures.texts[TXT_START_SCREEN], NULL, &press_enter_rect);
+                D_PRINT("render starting screen");
                 SDL_RenderPresent(rend);
                 return;
         } else if(data->gamestate == NAME_ENTRY) {
-                render_name(data, rend, assets->textures.texts, assets->font);
+                render_name(data, rend, &assets->textures);
+                D_PRINT("render name");
+                SDL_RenderPresent(rend);
                 return;
         } else if(data->gamestate == LEADERBOARD) {
-                render_leaderboard(data->leaderboard, rend, assets->textures.texts, assets->font, data->player_score_index);
+                render_leaderboard(data->leaderboard, rend, &assets->textures, data->player_score_index);
+                D_PRINT("render leaderboard");
+                SDL_RenderPresent(rend);
                 return;
         }
 
@@ -47,8 +51,8 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
 
         //CNT_START;
         for(size_t i = 0; i < data->enemy_count; ++i)
-                render_enemy(&data->enemies[i], NULL, assets->font, rend, &assets->textures);
-        render_enemy(&data->gold_enemy, &data->sparkle, assets->font, rend, &assets->textures);
+                render_enemy(&data->enemies[i], NULL, rend, &assets->textures);
+        render_enemy(&data->gold_enemy, &data->sparkle, rend, &assets->textures);
         //CNT_PRINT("enemy render");
 
         if(data->level == 7)
@@ -61,12 +65,11 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
         for(size_t i = 0; i < data->bb_count; ++i)
                 SDL_RenderCopyEx(rend, assets->textures.sprites[SPR_BB], NULL, &MK_BB_RECT(data->bb[i].point), data->bb[i].angle, NULL, SDL_FLIP_NONE);
 
-        render_scores(data, rend, &assets->textures, assets->font);
+        render_scores(data, rend, &assets->textures);
 
         //"STAGE N"
         if(data->gamestate == IN_GAME && data->level_timeout) {
                 //CNT_START;
-                char stage[10] = {0};
                 SDL_RenderCopy(rend, assets->textures.texts[TXT_STAGE], NULL, &stage_rect);
                 SDL_RenderCopy(rend, assets->textures.white_numbers[data->level-1], NULL, &n_rect);
                 --data->level_timeout;
@@ -98,6 +101,8 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
                 SDL_RenderCopy(rend, assets->textures.texts[TXT_YOU_WIN], NULL, &win_rect);
                 SDL_RenderCopy(rend, assets->textures.texts[TXT_PRESSR], NULL, &pressr_rect);
         }
+
+        D_PRINT("render");
         switch(data->gamestate) {
                 case IN_GAME:
                                 SDL_RenderPresent(rend);
@@ -112,6 +117,8 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
                 case KEYSET_MODE:
                 case SOUND:
                                 render_menu(data, rend, assets->font, assets->textures.menu);
+                                SDL_RenderPresent(rend);
+                                SDL_SetRenderDrawColor(rend, 0, 0, 0, 0);
                                 break;
                 default:
                                 fprintf(stderr, "gamestate error. fatal.\nterminating.\n");
@@ -129,7 +136,7 @@ static inline void render_player(GameData *data, SDL_Renderer *rend, Textures *t
                         SDL_RenderCopy(rend, texts->sprites[SPR_SHIP], NULL, &data->ship);
 }
 
-static inline void render_enemy(Enemy *enemy, Sparkle *sparkle, TTF_Font *font, SDL_Renderer *rend, Textures *texts) {
+static inline void render_enemy(Enemy *enemy, Sparkle *sparkle, SDL_Renderer *rend, Textures *texts) {
         if(is_on_screen(enemy->rect)) {
                 if(enemy->status == ALIVE) {
                         SDL_RenderCopyEx(rend, texts->sprites[enemy->texture], NULL, &enemy->rect, enemy->angle, NULL, SDL_FLIP_NONE);
@@ -146,7 +153,7 @@ static inline void render_enemy(Enemy *enemy, Sparkle *sparkle, TTF_Font *font, 
                 } else if(enemy->status != DEAD) {
                         SDL_RenderCopy(rend, texts->sprites[SPR_EXPLOSION], &explosion_clips[enemy->status-1], &enemy->rect);
 
-                        size_t width;
+                        unsigned width;
                         if(enemy->texture == SPR_GOLD_ENEMY) width = 4;
                         else if (enemy->passes > 5) width = 1;
                         else if(enemy->passes > 2) width = 2;
@@ -166,8 +173,7 @@ static inline void render_boss(Boss *boss, SDL_Renderer *rend, SDL_Texture *spri
                         SDL_RenderCopy(rend, sprites[SPR_BOSS], &boss_clips[3 - (4 * (boss->hp-1) / BOSS_HP)], &boss->rect);
                         SDL_SetTextureColorMod(sprites[SPR_BOSS], 255, 255, 255);
                         --boss->damage_timeout;
-                }
-                else SDL_RenderCopy(rend, sprites[SPR_BOSS], &boss_clips[3 - (4 * (boss->hp-1) / BOSS_HP)], &boss->rect);
+                } else SDL_RenderCopy(rend, sprites[SPR_BOSS], &boss_clips[3 - (4 * (boss->hp-1) / BOSS_HP)], &boss->rect);
         } else if(boss->status != DEAD) {
                 if(boss->new_exp_timeout || boss->explosions[0].timeout) {
                         SDL_RenderCopy(rend, sprites[SPR_BOSS], &boss_clips[3], &boss->rect);
@@ -182,18 +188,13 @@ static inline void render_boss(Boss *boss, SDL_Renderer *rend, SDL_Texture *spri
         }
 }
 
-static inline void render_scores(GameData *data, SDL_Renderer *rend, Textures *texts, TTF_Font *font) {
+static inline void render_scores(GameData *data, SDL_Renderer *rend, Textures *texts) {
         //CNT_START;
         const SDL_Rect score_rect = {10, 10, 200, 25};
         const SDL_Rect highscore_rect = {1000, 10, 270, 25};
 
         SDL_RenderCopy(rend, texts->score_texts[SCORE_TXT], NULL, &score_rect);
         SDL_RenderCopy(rend, texts->score_texts[HSCORE_TXT], NULL, &highscore_rect);
-
-        // SDL_Surface *score_surf = TTF_RenderText_Blended(font, "SCORE: ", white);
-        // SDL_Surface *highscore_surf = TTF_RenderText_Blended(font, "AAASCORE: ", white);
-        // render_surf(rend, score_surf, &score_rect);
-        // render_surf(rend, highscore_surf, &highscore_rect);
 
         if(data->one_up_timeout) {
                 SDL_RenderCopy(rend, texts->gold_numbers[GOLD_1UP], NULL, &one_up_rect);

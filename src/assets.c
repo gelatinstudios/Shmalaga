@@ -1,17 +1,18 @@
 #include "essentials.h"
 
-static inline void load_textures(SDL_Renderer *, TTF_Font *, Textures *, unsigned);
+static inline void load_textures(SDL_Renderer *, TTF_Font *, Textures *, Score [10]);
 static inline SDL_Texture *text_load(SDL_Renderer *, TTF_Font *, const char *);
 static inline SDL_Texture *sprite_load(SDL_Renderer *, const char *);
 static inline SDL_Texture *gold_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i);
 static inline SDL_Texture *white_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i);
+static inline SDL_Texture *white_letter_load(SDL_Renderer *rend, TTF_Font *font, const char i);
 static inline SDL_Texture *create_sparkle(SDL_Renderer *);
 static inline void load_sounds(Sounds *);
 static inline Mix_Chunk *sound_load(const char *);
 
 int err = 0;
 
-int load_assets(SDL_Renderer *rend, Assets *assets, unsigned highscore) {
+int load_assets(SDL_Renderer *rend, Assets *assets, Score leaderboard[10]) {
         puts("loading font...");
         assets->font = TTF_OpenFont("prstart.ttf", 8);
         if(!assets->font) {
@@ -20,7 +21,7 @@ int load_assets(SDL_Renderer *rend, Assets *assets, unsigned highscore) {
         }
 
         puts("loading textures...");
-        load_textures(rend, assets->font, &assets->textures, highscore);
+        load_textures(rend, assets->font, &assets->textures, leaderboard);
         if(err) return 1;
 
         puts("loading sounds...");
@@ -29,7 +30,7 @@ int load_assets(SDL_Renderer *rend, Assets *assets, unsigned highscore) {
         return 0;
 }
 
-static inline void load_textures(SDL_Renderer *rend, TTF_Font *font, Textures *textures, unsigned highscore) {
+static inline void load_textures(SDL_Renderer *rend, TTF_Font *font, Textures *textures, Score leaderboard[10]) {
         const char *menu_texts[] = {"MAIN MENU", "Sound", "Controls", "Quit", "Back"};
         for(size_t i = 0; i < LNGTH(textures->menu); ++i)
                 textures->menu[i] = text_load(rend, font, menu_texts[i]);
@@ -50,13 +51,20 @@ static inline void load_textures(SDL_Renderer *rend, TTF_Font *font, Textures *t
         for(size_t i = 0; i < LNGTH(textures->white_numbers); ++i)
                 textures->white_numbers[i] = white_number_load(rend, font, i);
 
+        for(size_t i = 0; i < 26; ++i)
+                textures->white_letters[i] = white_letter_load(rend, font, i);
+
+        for(size_t i = 0; i < 10; ++i)
+                textures->leaderboard_texts[i] = make_score_texture(rend, font, &leaderboard[i], i);
+
+
 
         //score texts
         SDL_Surface *surf = TTF_RenderText_Blended(font, "SCORE: 0", white);
         textures->score_texts[SCORE_TXT] = SDL_CreateTextureFromSurface(rend, surf);
         SDL_FreeSurface(surf);
         char str[30] = {0};
-        sprintf(str, "HIGHSCORE: %u", highscore);
+        sprintf(str, "HIGHSCORE: %u", leaderboard[0].val);
         surf = TTF_RenderText_Blended(font, str, white);
         textures->score_texts[HSCORE_TXT] = SDL_CreateTextureFromSurface(rend, surf);
         SDL_FreeSurface(surf);
@@ -111,7 +119,7 @@ static inline SDL_Texture *gold_number_load(SDL_Renderer *rend, TTF_Font *font, 
 }
 
 static inline SDL_Texture *white_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i) {
-        char str[2] = {0};
+        char str[3] = {0};
         sprintf(str, "%zu", i+1);
 
         SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
@@ -125,6 +133,23 @@ static inline SDL_Texture *white_number_load(SDL_Renderer *rend, TTF_Font *font,
         SDL_FreeSurface(surf);
         return text;
 }
+
+static inline SDL_Texture *white_letter_load(SDL_Renderer *rend, TTF_Font *font, const char i) {
+        char str[2] = {0};
+        sprintf(str, "%c", i + 'A');
+
+        SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
+        if(!surf) {
+                fprintf(stderr, "error rendering score_num text\"%s\":\n\t%s\n", str, TTF_GetError());
+                err = 1;
+                return NULL;
+        }
+
+        SDL_Texture *text = SDL_CreateTextureFromSurface(rend, surf);
+        SDL_FreeSurface(surf);
+        return text;
+}
+
 static inline SDL_Texture *create_sparkle(SDL_Renderer *rend) {
         const SDL_Rect rects[] = {{0, 0, 1, 1}, {2, 0, 1, 1}, {1, 1, 1, 1}, {0, 2, 1, 1}, {2, 2, 1, 1}};
         SDL_Surface *surf = SDL_CreateRGBSurfaceWithFormat(0, 3, 3, 8, SDL_PIXELFORMAT_RGBA32);

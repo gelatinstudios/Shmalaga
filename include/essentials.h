@@ -1,8 +1,6 @@
 #ifndef ESSENTIALS_H
 #define ESSENTIALS_H
 
-//#define NDEBUG
-
 #define _GNU_SOURCE
 
 #include <stdio.h>
@@ -15,24 +13,39 @@
 #include <assert.h>
 
 #ifdef SHMALAGA_DEBUG
-#include <sched.h>
 
-static inline size_t rdtsc(){
-    unsigned int lo,hi;
-    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
-    return ((size_t)hi << 32) | lo;
-}
+        #include <errno.h>
+        #include <sched.h>
 
-size_t cycles;
+        static inline size_t rdtsc(){
+            unsigned int lo,hi;
+            __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+            return ((size_t)hi << 32) | lo;
+        }
 
-#define CNT_START (cycles = rdtsc())
-// #define CNT_RESTART (cycles = rdstc())
-#define CNT_PRINT(x) (printf("%s: clock cycles: %zu\n", (x), rdtsc() - cycles))
+        size_t cycles;
+        size_t sdl_ticks;
+
+        #define CNT_START (cycles = rdtsc())
+        // #define CNT_RESTART (cycles = rdstc())
+        #define CNT_PRINT(x) (printf("%s: clock cycles: %zu\n", (x), rdtsc() - cycles))
+
+        #define SCNT_START (sdl_ticks = SDL_GetPerformanceCounter())
+        #define SCNT_PRINT(x) (printf("%s: sdl_ticks: %zu\n", (x), SDL_GetPerformanceCounter() - sdl_ticks))
+
+        #define D_START ({CNT_START; SCNT_START;})
+        #define D_PRINT(x) ({CNT_PRINT(x); SCNT_PRINT(x);})
 
 #else
 
-#define CNT_START
-#define CNT_PRINT(x) {}
+        #define CNT_START
+        #define CNT_PRINT(x)
+        #define SCNT_START
+        #define SCNT_PRINT(x)
+        #define D_START
+        #define D_PRINT(x)
+
+        #define NDEBUG
 
 #endif
 
@@ -52,7 +65,7 @@ size_t cycles;
 
 int intro(Star *, SDL_Renderer *, TTF_Font *);
 
-int handler(GameData *, SDL_Window *, Sounds *);
+int handler(GameData *, WinRend *, Assets *);
 
 int menu_handler(GameData *, Mix_Chunk *[], SDL_Event *);
 void render_menu(GameData *, SDL_Renderer *, TTF_Font *, SDL_Texture *[]);
@@ -65,9 +78,9 @@ void update(GameData *data, SDL_Renderer *rend, Sounds *sounds, SDL_Texture *sco
 
 void render(GameData *, SDL_Renderer *, Assets *);
 
-void name_handler(GameData *, SDL_Event*);
-void render_name(GameData *, SDL_Renderer *, SDL_Texture *[], TTF_Font *);
-void render_leaderboard(Score[], SDL_Renderer *, SDL_Texture *[], TTF_Font *, size_t);
+void name_handler(GameData *, SDL_Renderer *,TTF_Font *, SDL_Event*, SDL_Texture *[10]);
+void render_name(GameData *, SDL_Renderer *, Textures *);
+void render_leaderboard(Score[], SDL_Renderer *, Textures *, size_t);
 
 void clean(WinRend *, Assets *);
 

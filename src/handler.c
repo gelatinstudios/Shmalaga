@@ -6,7 +6,7 @@
 
 static void reset(GameData *, Mix_Music *);
 
-int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
+int handler(GameData *data, WinRend *winrend, Assets *assets) {
         int quit = 0;
 
         if(data->gamestate == IN_GAME && data->lives && (data->player_status == ALIVE || data->player_status == DEAD)) {
@@ -18,7 +18,7 @@ int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
                 if(state[data->keys[SLOW_K]]) vel /= 2;
                 if(state[data->keys[SHOOT_K]] && !data->bullet_timeout) {
                         create_gb(data);
-                        if(!data->muted) play_sound(sounds->sfx[SND_LASER], data->ship.x + data->ship.w, SND_LASER);
+                        if(!data->muted) play_sound(assets->sounds.sfx[SND_LASER], data->ship.x + data->ship.w, SND_LASER);
                 }
                 if(state[data->keys[LEFT_K]] && data->ship.x > 0) data->ship.x -= vel;
                 if(state[data->keys[RIGHT_K]] && data->ship.x < 1280 - data->ship.w) data->ship.x += vel;
@@ -37,7 +37,7 @@ int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
                         if(pressed == data->keys[MENU_K] && data->gamestate < MENU) {
                                 data->gamestate = MENU;
                                 Mix_PauseMusic();
-                                //Mix_PlayMusic(sounds->pause_music, -1);
+                                //Mix_PlayMusic(assets->sounds.pause_music, -1);
                                 break;
                         //}
                         // else if(pressed == data->keys[PAUSE_K]) {
@@ -54,11 +54,11 @@ int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
                                 else Mix_ResumeMusic();
                         } else if(pressed == data->keys[FSCREEN_K]) {
                                 //data->gamestate = PAUSED;
-                                SDL_SetWindowFullscreen(win, data->fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
+                                SDL_SetWindowFullscreen(winrend->win, data->fullscreen ? 0 : SDL_WINDOW_FULLSCREEN);
                                 data->fullscreen = !data->fullscreen;
-                        } else if(pressed == data->keys[RESET_K]) reset(data, sounds->main_music);
+                        } else if(pressed == data->keys[RESET_K]) reset(data, assets->sounds.main_music);
                         else if((pressed == SDLK_RETURN && data->gamestate == IN_GAME) && ((data->level == 7 && data->boss.status == DEAD) || !data->lives)) {
-                                Mix_PlayMusic(sounds->pause_music, -1);
+                                Mix_PlayMusic(assets->sounds.pause_music, -1);
                                 if(data->muted) Mix_PauseMusic();
                                 if(data->score.val > data->leaderboard[9].val) {
                                         data->gamestate = NAME_ENTRY;
@@ -70,10 +70,10 @@ int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
                         }
                 }
 
-                if(data->gamestate == NAME_ENTRY) name_handler(data, &event);
+                if(data->gamestate == NAME_ENTRY) name_handler(data, winrend->rend, assets->font, &event, assets->textures.leaderboard_texts);
                 else if(data->gamestate == LEADERBOARD) {
-                        if(pressed == SDLK_RETURN) reset(data, sounds->main_music);
-                } else if(data->gamestate >= MENU) quit |= menu_handler(data, sounds->sfx, &event);
+                        if(pressed == SDLK_RETURN) reset(data, assets->sounds.main_music);
+                } else if(data->gamestate >= MENU) quit |= menu_handler(data, assets->sounds.sfx, &event);
                 else if(data->gamestate == STARTING_SCREEN) {
                         if(data->selected == 10) data->secret |= data->secret >> 4;
 
@@ -87,7 +87,7 @@ int handler(GameData *data, SDL_Window *win, Sounds *sounds) {
                                 }
                         } else if(pressed == SDLK_RETURN) {
                                 data->gamestate = IN_GAME;
-                                Mix_PlayMusic(sounds->main_music, -1);
+                                Mix_PlayMusic(assets->sounds.main_music, -1);
                                 data->selected = 0;
                                 if(data->secret & 0x04) {
                                         data->ship.w = 12;

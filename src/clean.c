@@ -14,6 +14,7 @@ void clean(WinRend *winrend, Assets *assets) {
         if(assets->sounds.pause_music) Mix_FreeMusic(assets->sounds.pause_music);
         if(assets->sounds.boss_music) Mix_FreeMusic(assets->sounds.boss_music);
 
+        SDL_ClearError();
         for(size_t i = 0; i < LNGTH(assets->sounds.sfx); ++i)
                 FREE_CHNK(assets->sounds.sfx[i]);
         puts(SDL_GetError());

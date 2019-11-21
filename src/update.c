@@ -137,7 +137,6 @@ static inline void update_score_text(SDL_Renderer *rend, TTF_Font *font, SDL_Tex
         sprintf(str, "SCORE: %u", score);
         SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
         //SDL_UpdateTexture(*text, NULL, surf->pixels, surf->pitch * 100);
-        SDL_ClearError();
         SDL_DestroyTexture(*text);
         *text = SDL_CreateTextureFromSurface(rend, surf);
         SDL_FreeSurface(surf);

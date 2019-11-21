@@ -12,7 +12,8 @@ typedef struct {
         SDL_Texture *texts[12];
         SDL_Texture *sprites[10];
         SDL_Texture *gold_numbers[12];
-        SDL_Texture *white_numbers[7];
+        SDL_Texture *white_numbers[10];
+        SDL_Texture *white_letters[26];
         SDL_Texture *score_texts[2];
         SDL_Texture *name_texts[3];
         SDL_Texture *leaderboard_texts[10];
@@ -33,7 +34,7 @@ typedef struct {
         Sounds sounds;
 } Assets;
 
-int load_assets(SDL_Renderer *, Assets *, unsigned);
+int load_assets(SDL_Renderer *, Assets *, Score[10]);
 
 static inline void play_sound(Mix_Chunk *sound, int x_pos, size_t index) {
         x_pos = 2 * (x_pos - 1280/2) * 254 / 1280;
