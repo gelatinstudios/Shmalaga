@@ -2,11 +2,11 @@
 
 #define ONE_UP 100000U
 
-static inline void enemy_handler(GameData *, Enemy *, Mix_Chunk *, SDL_Texture *, SDL_Renderer *, TTF_Font *);
+static inline void enemy_handler(GameData *, Enemy *, Mix_Chunk *, SDL_Texture **, SDL_Renderer *, TTF_Font *);
 static inline void player_death(GameData *, Mix_Chunk *);
 static inline void update_score_text(SDL_Renderer *, TTF_Font *, SDL_Texture **, unsigned);
 
-void update(GameData *data, SDL_Renderer *rend, Sounds *sounds, SDL_Texture *score_text, TTF_Font *font) {
+void update(GameData *data, SDL_Renderer *rend, Sounds *sounds, SDL_Texture **score_text, TTF_Font *font) {
         if(data->gamestate != IN_GAME) return;
 
         //all enemies dead
@@ -49,7 +49,7 @@ void update(GameData *data, SDL_Renderer *rend, Sounds *sounds, SDL_Texture *sco
                         data->score.val += 5;
                         data->boss.damage_timeout = DAMAGE_TIMEOUT;
                         destroy_gb(data, i);
-                        update_score_text(rend, font, &score_text, data->score.val);
+                        update_score_text(rend, font, score_text, data->score.val);
                 }
         }
         if(data->player_status == ALIVE && data->boss.status == ALIVE && collision_detect(data->ship, data->boss.rect))
@@ -107,7 +107,7 @@ static inline void player_death(GameData *data, Mix_Chunk *explosion) {
         if(!data->muted) play_sound(explosion, data->ship.x + data->ship.w/2, SND_EXP);
 }
 
-static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explosion, SDL_Texture *score_text, SDL_Renderer *rend, TTF_Font *font) {
+static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explosion, SDL_Texture **score_text, SDL_Renderer *rend, TTF_Font *font) {
         if(data->player_status == ALIVE && enemy->status == ALIVE && collision_detect(data->ship, enemy->rect))
                 player_death(data, explosion);
 
@@ -119,7 +119,7 @@ static inline void enemy_handler(GameData *data, Enemy *enemy, Mix_Chunk *explos
                         if(!data->muted) play_sound(explosion, enemy->rect.x + enemy->rect.w/2, SND_EXP);
                         if(enemy->texture == SPR_GOLD_ENEMY) data->score.val += 2*ENEM_P;
                         else data->score.val += ENEM_P / pow(2, data->enemies[i].passes);
-                        update_score_text(rend, font, &score_text, data->score.val);
+                        update_score_text(rend, font, score_text, data->score.val);
                 }
         }
         if(data->gamestate == IN_GAME && enemy->status > ALIVE && enemy->status < DEAD) {

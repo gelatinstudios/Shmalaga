@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
                 quit = handler(&data, &winrend, &assets);
                 D_PRINT("handler");
                 D_START;
-                update(&data, winrend.rend, &assets.sounds, assets.textures.score_texts[SCORE_TXT], assets.font);
+                update(&data, winrend.rend, &assets.sounds, &assets.textures.score_texts[SCORE_TXT], assets.font);
                 D_PRINT("update");
                 automata(&data, &assets.sounds);
                 render(&data, winrend.rend, &assets);
@@ -71,6 +71,10 @@ int main(int argc, char *argv[]) {
 
 static inline void error(const char *str, WinRend *winrend, Assets *assets) {
         fprintf(stderr, "failed to %s\n\nterminating.\n\n", str);
+#idef _WIN32
+        MessageBox(0, L"Assets not found.\n Please place exe in proper directory!", 0, MB_OK);
+#endif
+
         clean(winrend, assets);
         puts("bruh moment");
         exit(EXIT_FAILURE);
