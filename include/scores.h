@@ -3,7 +3,7 @@
 
 typedef struct {
         char name[3];
-        unsigned val;
+        Uint16 val;
         bool won;
 } Score;
 

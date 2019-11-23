@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 
         Uint8 err = init_data(&data);
         if(err) error("initialize data", &winrend, &assets);
-
+        
         err = init_winrend(&winrend);
         if(err) error("load window and renderer", &winrend, &assets);
 
