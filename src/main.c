@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
 static inline void error(const char *str, WinRend *winrend, Assets *assets) {
         fprintf(stderr, "failed to %s\n\nterminating.\n\n", str);
 #ifdef _WIN32
-        MessageBox(0, (LPCSTR) L"Assets not found.\n Please place exe in proper directory!", 0, MB_OK);
+        MessageBox(0, "Assets not found.\n Please place exe in proper directory!", 0, MB_OK);
 #endif
 
         clean(winrend, assets);
