@@ -39,10 +39,6 @@ typedef struct {
 } Color;
 
 typedef struct {
-        Uint8 master, music, sfx;
-} Volumes;
-
-typedef struct {
         SDL_Rect rect;
         Color color;
 } Star;
@@ -94,6 +90,7 @@ typedef struct {
 } Boss;
 
 enum {UP_K, DOWN_K, LEFT_K, RIGHT_K, SHOOT_K, SLOW_K, MENU_K, FSCREEN_K, MUTE_K, RESET_K};
+enum {VL_MASTER, VL_MUSIC, VL_SFX};
 typedef struct {
         SDL_Keycode keys[10]; //contains SDL_Scancodes too i guess this is polymorphism not really
 
@@ -102,7 +99,7 @@ typedef struct {
         bool fullscreen;
         bool muted;
 
-        Volumes volumes;
+        Uint8 volumes[3];
 
         const SDL_Keycode *sekritptr;
         Uint8 secret;

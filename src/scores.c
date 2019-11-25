@@ -28,8 +28,7 @@ size_t scores_update(Score scores[10], Score score, SDL_Renderer *rend, TTF_Font
         for (size_t j = i; j < 10; ++j) {
                 SDL_ClearError();
                 SDL_DestroyTexture(texts[j]);
-                printf("error at %zu: %s\n", j, SDL_GetError());
-                texts[j] = make_score_texture(rend, font, &scores[j], j);
+                texts[j] = make_leaderboard_text(rend, font, &scores[j], j);
         }
 
 #ifdef PRNT_LDBRD
@@ -38,23 +37,4 @@ size_t scores_update(Score scores[10], Score score, SDL_Renderer *rend, TTF_Font
 #endif
 
         return i;
-}
-
-SDL_Texture *make_score_texture(SDL_Renderer *rend, TTF_Font *font, const Score *score, size_t n) {
-        char name[4] = {0};
-        if(!score->name[0])
-                strcpy(name, "---");
-        else {
-                name[0] = score->name[0];
-                name[1] = score->name[1];
-                name[2] = score->name[2];
-        }
-
-        char str[30] = {0};
-        sprintf(str, "%c%c%zu %s: %u", score->won ? 'W' : ' ', ' ', n+1, name, score->val);
-        SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
-        assert(surf);
-        SDL_Texture *text = SDL_CreateTextureFromSurface(rend, surf);
-        SDL_FreeSurface(surf);
-        return text;
 }

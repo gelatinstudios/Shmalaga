@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
 
         Uint8 err = init_data(&data);
         if(err) error("initialize data", &winrend, &assets);
-        
+
         err = init_winrend(&winrend);
         if(err) error("load window and renderer", &winrend, &assets);
 
@@ -49,17 +49,13 @@ int main(int argc, char *argv[]) {
         while(!quit) {
                 starting_tick = SDL_GetTicks();
 
-                D_START;
                 quit = handler(&data, &winrend, &assets);
-                D_PRINT("handler");
-                D_START;
                 update(&data, winrend.rend, &assets.sounds, &assets.textures.score_texts[SCORE_TXT], assets.font);
-                D_PRINT("update");
                 automata(&data, &assets.sounds);
                 render(&data, winrend.rend, &assets);
 
                 if(1000/FPS > SDL_GetTicks() - starting_tick)
-                        SDL_Delay(1000/FPS  - (SDL_GetTicks() - starting_tick));
+                         SDL_Delay(1000/FPS  - (SDL_GetTicks() - starting_tick));
         }
         SDL_SetWindowFullscreen(winrend.win, 0);
 
