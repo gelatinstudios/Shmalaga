@@ -116,8 +116,8 @@ int menu_handler(GameData *data, SDL_Renderer *rend, Menu_Textures *texts, Mix_C
 
                         const Uint8 *state = SDL_GetKeyboardState(NULL);
                         if(state[SDL_SCANCODE_LEFT] || state[SDL_SCANCODE_RIGHT]) {
-                                if(state[SDL_SCANCODE_LEFT]) data->volumes[data->selected] -= VOL_SCALE;
-                                else data->volumes[data->selected] += VOL_SCALE;
+                                if(state[SDL_SCANCODE_LEFT] && data->volumes[data->selected]) data->volumes[data->selected] -= VOL_SCALE;
+                                else if(data->volumes[data->selected] != MIX_MAX_VOLUME) data->volumes[data->selected] += VOL_SCALE;
 
                                 SDL_DestroyTexture(texts->volume_texts[data->selected]);
 

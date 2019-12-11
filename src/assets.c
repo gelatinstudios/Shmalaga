@@ -5,7 +5,7 @@ static inline void init_menu_texts(SDL_Renderer *rend, TTF_Font *font, Menu_Text
 static inline SDL_Texture *text_load(SDL_Renderer *, TTF_Font *, const char *);
 static inline SDL_Texture *sprite_load(SDL_Renderer *, const char *);
 static inline SDL_Texture *gold_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i);
-static inline SDL_Texture *white_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i);
+static inline void white_number_load(SDL_Texture *[], const size_t, SDL_Renderer *rend, TTF_Font *font);
 static inline SDL_Texture *white_letter_load(SDL_Renderer *rend, TTF_Font *font, const char i);
 static inline SDL_Texture *create_sparkle(SDL_Renderer *);
 static inline void load_sounds(Sounds *);
@@ -47,8 +47,7 @@ static inline void load_textures(SDL_Renderer *rend, TTF_Font *font, Textures *t
         for(size_t i = 0; i < LNGTH(textures->gold_numbers); ++i)
                 textures->gold_numbers[i] = gold_number_load(rend, font, i);
 
-        for(size_t i = 0; i < LNGTH(textures->white_numbers); ++i)
-                textures->white_numbers[i] = white_number_load(rend, font, i);
+        white_number_load(textures->white_numbers, LNGTH(textures->white_numbers), rend, font);
 
         for(size_t i = 0; i < 26; ++i)
                 textures->white_letters[i] = white_letter_load(rend, font, i);
@@ -147,20 +146,20 @@ static inline SDL_Texture *gold_number_load(SDL_Renderer *rend, TTF_Font *font, 
         return text;
 }
 
-static inline SDL_Texture *white_number_load(SDL_Renderer *rend, TTF_Font *font, const size_t i) {
-        char str[3] = {0};
-        sprintf(str, "%zu", i+1);
+static inline void white_number_load(SDL_Texture *texts[], const size_t n, SDL_Renderer *rend, TTF_Font *font) {
+        for (size_t i = 0; i < n; ++i) {
+                char str[3] = {0};
+                sprintf(str, "%zu", i+1);
+                SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
+                if(!surf) {
+                        fprintf(stderr, "error rendering score_num text\"%s\":\n\t%s\n", str, TTF_GetError());
+                        err = 1;
+                        return;
+                }
 
-        SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);
-        if(!surf) {
-                fprintf(stderr, "error rendering score_num text\"%s\":\n\t%s\n", str, TTF_GetError());
-                err = 1;
-                return NULL;
+                texts[i] = SDL_CreateTextureFromSurface(rend, surf);
+                SDL_FreeSurface(surf);
         }
-
-        SDL_Texture *text = SDL_CreateTextureFromSurface(rend, surf);
-        SDL_FreeSurface(surf);
-        return text;
 }
 
 static inline SDL_Texture *create_sparkle(SDL_Renderer *rend) {

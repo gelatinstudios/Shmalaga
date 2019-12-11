@@ -46,7 +46,7 @@ SDL_Texture *make_highscore_text(SDL_Renderer *rend, TTF_Font *font, unsigned sc
         return text;
 }
 
-// TODO: put the const arrays IN the function and just pass the index 
+// TODO: put the const arrays IN the function and just pass the index
 
 SDL_Texture *make_key_text(SDL_Renderer *rend, TTF_Font *font, const char *action, const char *keyname) {
         char str[50] = {0};
@@ -62,7 +62,7 @@ SDL_Texture *make_key_text(SDL_Renderer *rend, TTF_Font *font, const char *actio
 SDL_Texture *make_volume_text(SDL_Renderer *rend, TTF_Font *font, const char *barname, int volume) {
         char bar[] = "-----------";
         bar[10*volume/MIX_MAX_VOLUME] = '|';
-        char str[27] = {0};
+        char str[30] = {0};
         sprintf(str, "%s: %s", barname, bar);
 
         SDL_Surface *surf = TTF_RenderText_Blended(font, str, white);

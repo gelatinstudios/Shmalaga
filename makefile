@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -pedantic -Iinclude -O3 -std=gnu18 -DSHMALAGA_DEBUG -g -DPRNT_LDBRD
+CFLAGS = -Wall -Wextra -pedantic -Iinclude -O2 -std=gnu18 -g -DPRNT_LDBRD
 
 OBJDIR=obj
 SRCDIR=src

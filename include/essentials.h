@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 #include <tgmath.h>
 #include <assert.h>
 
@@ -35,7 +34,7 @@
         #define CNT_PRINT(x) (printf("%s: clock cycles: %zu\n", (x), rdtsc() - cycles))
 
         #define SCNT_START (sdl_ticks = SDL_GetPerformanceCounter())
-        #define SCNT_PRINT(x) (printf("%s: sdl_ticks: %zu\n", (x), SDL_GetPerformanceCounter() - sdl_ticks))
+        #define SCNT_PRINT(x) (printf("%s: ms: %g\n", (x), (double)(SDL_GetPerformanceCounter() - sdl_ticks) * 1000.0/SDL_GetPerformanceFrequency()))
 
         #define D_START ({CNT_START; SCNT_START;})
         #define D_PRINT(x) ({CNT_PRINT(x); SCNT_PRINT(x);})

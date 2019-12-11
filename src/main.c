@@ -47,11 +47,13 @@ int main(int argc, char *argv[]) {
         Uint32 starting_tick = 0;
         Uint8 quit = 0;
         while(!quit) {
+                D_START;
                 starting_tick = SDL_GetTicks();
 
                 quit = handler(&data, &winrend, &assets);
                 update(&data, winrend.rend, &assets.sounds, &assets.textures.score_texts[SCORE_TXT], assets.font);
                 automata(&data, &assets.sounds);
+                D_PRINT("logic");
                 render(&data, winrend.rend, &assets);
 
                 if(1000/FPS > SDL_GetTicks() - starting_tick)

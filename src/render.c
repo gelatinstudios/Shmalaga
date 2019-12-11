@@ -18,7 +18,7 @@ const SDL_Rect boss_battle_rect = {640-250+10, 390-(390/2)-100, 500, 100};
 const SDL_Rect win_rect = {(1280 - 700) / 2, (720 - 100) / 2, 700, 100};
 
 void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
-        //D_START;
+        D_START;
         if(!(data->secret & 0x01)) SDL_RenderClear(rend);
 
         //stars
@@ -101,6 +101,7 @@ void render(GameData *data, SDL_Renderer *rend, Assets *assets) {
 
         switch(data->gamestate) {
                 case IN_GAME:
+                                D_PRINT("main render");
                                 SDL_RenderPresent(rend);
                                 break;
                 // case PAUSED:
